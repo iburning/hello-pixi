@@ -1,0 +1,2 @@
+# hello-pixi
+Learn PixiJS
