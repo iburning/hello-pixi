@@ -1,0 +1,40 @@
+/**
+ * @fileoverview gulpfile
+ * @author burning (www.cafeinit.com)
+ * @version 2017.08.27
+ */
+
+const gulp = require('gulp')
+// const cleanCSS = require('gulp-clean-css')
+// const less = require('gulp-less')
+// const LessAutoprefix = require('less-plugin-autoprefix')
+// const pug = require('gulp-pug')
+
+// const autoprefix = new LessAutoprefix({ browsers: ['last 5 versions'] })
+
+// tasks
+// gulp.task('default', ['views', 'style', 'copy'])
+gulp.task('default', ['script', 'views', 'assets'])
+
+gulp.task('script', () => {
+  return gulp.src([
+    './node_modules/pixi.js/dist/*',
+    './bower_components/keyboard/keyboard.js',
+    './bower_components/scaleToWindow/scaleToWindow.js',
+  ])
+    .pipe(gulp.dest('./dist/script'))
+})
+
+gulp.task('views', () => {
+  return gulp.src([
+    './src/*/index.html'
+  ])
+    .pipe(gulp.dest('./dist'))
+})
+
+gulp.task('assets', () => {
+  return gulp.src([
+    './src/*/assets/*'
+  ])
+    .pipe(gulp.dest('./dist'))
+})
