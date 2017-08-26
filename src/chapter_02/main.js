@@ -64,19 +64,23 @@ function setup() {
   // Create the sprite from the texture
   rockman = new Sprite(texture)
 
-  // Position the sprite on the canvas
-  rockman.x = 0
-  rockman.y = UNIT * 2
+  // Center the sprite
+  rockman.x = renderer.view.width / 2 - rockman.width / 2
+  rockman.y = renderer.view.height / 2 - rockman.height / 2
 
-  rockman.vx = SPEED
+  // Initialize the sprites's velocity variables
+  rockman.vx = 0
   rockman.vy = 0
 
-  // // Scale the sprite up so it's 3 times bigger than the original image
-  // build.scale.set(3, 3)
+  rockman.accelerationX = 0
+  rockman.accelerationY = 0
+  rockman.frictionX = 1
+  rockman.frictionY = 1
+  rockman.speed = 0.2
+  rockman.drag = 0.98
 
   // Add the sprite to the stage
   stage.addChild(rockman)
-
 
   // // Render the stage
   // renderer.render(stage)
@@ -115,12 +119,17 @@ function gameLoop() {
 
 
 function play() {
-  // console.log('playing...')
-  // Move the sprite 1 pixel pre frame
+  // Apply acceleration by adding acceleration to the sprite's volocity
+  rockman.vx += rockman.accelerationX
+  rockman.vy += rockman.accelerationY
+
+  // Apply friction by multiplying sprite's velocity by the friction
+  rockman.vx *= rockman.frictionX
+  rockman.vy *= rockman.frictionY
+
+  //Apply the velocity to the sprite's position to make it move
   rockman.x += rockman.vx
   rockman.y += rockman.vy
-
-  rockman.vx *= 0.9
 }
 
 function initKeyboard() {
@@ -133,29 +142,54 @@ function initKeyboard() {
   // Left arrow key 'press' method
   left.press = () => {
     // Change the sprite's velocity when the key is pressed
-    rockman.vx = -SPEED
-    rockman.vy = 0
+    // rockman.vx = -SPEED
+    // rockman.vy = 0
+
+    rockman.accelerationX = -rockman.speed
+    rockman.frictionX = 1
   }
 
   // Left arrow key 'release' method
   left.release = () => {
-    // If the left arrow has been released, and the right arrow isn't down,
-    // and the pixie isn't moving vertically, stop the sprite from moving
-    // by setting its velocity to zero
-    if (!right.isDown && rockman.vy === 0) {
-      rockman.vx = 0
+    if (!right.isDown) {
+      rockman.accelerationX = 0
+      rockman.frictionX = rockman.drag
     }
   }
 
   right.press = () => {
-    // Change the sprite's velocity when the key is pressed
-    rockman.vx = SPEED
-    rockman.vy = 0
+    rockman.accelerationX = rockman.speed
+    rockman.frictionX = 1
   }
 
   right.release = () => {
-    if (!left.isDown && rockman.vy === 0) {
-      rockman.vx = 0
+    if (!left.isDown) {
+      rockman.accelerationX = 0
+      rockman.frictionX = rockman.drag
+    }
+  }
+
+  up.press = () => {
+    rockman.accelerationY = -rockman.speed
+    rockman.frictionY = 1
+  }
+
+  up.release = () => {
+    if (!down.isDown) {
+      rockman.accelerationY = 0
+      rockman.frictionY = rockman.drag
+    }
+  }
+
+  down.press = () => {
+    rockman.accelerationY = rockman.speed
+    rockman.frictionY = 1
+  }
+
+  down.release = () => {
+    if (!up.isDown) {
+      rockman.accelerationY = 0
+      rockman.frictionY = rockman.drag
     }
   }
 }

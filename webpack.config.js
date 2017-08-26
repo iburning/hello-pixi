@@ -47,7 +47,7 @@ module.exports = {
     historyApiFallback: true,
     noInfo: true,
     contentBase: './dist',
-    host: host,
+    // host: host,
     // port: config.port
   },
 
