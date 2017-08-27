@@ -13,6 +13,7 @@ module.exports = {
   entry: {
     'chapter_01': './src/chapter_01/main.js',
     'chapter_02': './src/chapter_02/main.js',
+    'chapter_03': './src/chapter_03/main.js',
   },
 
   output: {
