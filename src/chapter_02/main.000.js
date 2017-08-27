@@ -16,11 +16,7 @@ const TextureCache = PIXI.utils.TextureCache
 const Texture = PIXI.Texture
 
 const UNIT = 45
-const ACCELERATION_X = 1    // 水平方向加速度
-const ACCELERATION_Y = 3    // 垂直方向加速度
-const GRAVITY = 1  // 0.5         // 重力加速度
-const FRICTION = 0.9     // 摩擦系数（速度衰减）
-
+const SPEED = 10
 
 // Set the game's current state to 'play'
 let state = play
@@ -59,7 +55,7 @@ function setup() {
 
   // Create a rectangle object that defines the position and
   // size of the sub-image you want to extract from the texture
-  let rectangle = new Rectangle(140, 0, 50, 100)
+  let rectangle = new Rectangle(100, 0, UNIT * 2, UNIT * 3)
   // console.log('rectangle', rectangle)
 
   // Tell the texture to use that rectangular section
@@ -67,7 +63,6 @@ function setup() {
 
   // Create the sprite from the texture
   rockman = new Sprite(texture)
-  console.log("rockman", rockman)
 
   // Center the sprite
   rockman.x = renderer.view.width / 2 - rockman.width / 2
@@ -79,8 +74,10 @@ function setup() {
 
   rockman.accelerationX = 0
   rockman.accelerationY = 0
-  rockman.frictionX = FRICTION
-  rockman.frictionY = FRICTION
+  rockman.frictionX = 1
+  rockman.frictionY = 1
+  rockman.speed =
+  rockman.drag = 0.98
 
   // Add the sprite to the stage
   stage.addChild(rockman)
@@ -117,36 +114,11 @@ function play() {
   rockman.vy *= rockman.frictionY
 
   // Gravity
-  rockman.vy += GRAVITY
+  rockman.vy += 0.2
 
   // Apply the velocity to the sprite's position to make it move
   rockman.x += rockman.vx
   rockman.y += rockman.vy
-
-  //Use the `contain` function to keep the sprite inside the canvas
-  let collision = contain(rockman, {
-    x: 0,
-    y: 0,
-    width: renderer.view.width,
-    height: renderer.view.height
-  })
-
-  // Check for a collision.
-  // If the value of 'collision' isn't 'undefined'
-  // then you know the sprite hit a boundary
-
-  if (collision) {
-    console.log("collision", collision)
-    // Reverse the sprite's 'vx' value if it hits the left or right
-    if (collision.has("left") || collision.has("right")) {
-      rockman.vx = -rockman.vx
-    }
-
-    // Reverse the sprite's 'vy' vlaue if it hits the top or bottom
-    if (collision.has("top") || collision.has("bottom")) {
-      rockman.vy = -rockman.vy
-    }
-  }
 }
 
 function initKeyboard() {
@@ -158,43 +130,55 @@ function initKeyboard() {
 
   // Left arrow key 'press' method
   left.press = () => {
-    rockman.accelerationX = -ACCELERATION_X
+    // Change the sprite's velocity when the key is pressed
+    // rockman.vx = -SPEED
+    // rockman.vy = 0
+
+    rockman.accelerationX = -rockman.speed
+    rockman.frictionX = 1
   }
 
   // Left arrow key 'release' method
   left.release = () => {
     if (!right.isDown) {
       rockman.accelerationX = 0
+      rockman.frictionX = rockman.drag
     }
   }
 
   right.press = () => {
-    rockman.accelerationX = ACCELERATION_X
+    rockman.accelerationX = rockman.speed
+    rockman.frictionX = 1
   }
 
   right.release = () => {
     if (!left.isDown) {
       rockman.accelerationX = 0
+      rockman.frictionX = rockman.drag
     }
   }
 
   up.press = () => {
-    rockman.accelerationY = -ACCELERATION_Y
+    rockman.accelerationY = -rockman.speed
+    rockman.frictionY = 1
   }
 
   up.release = () => {
     if (!down.isDown) {
       rockman.accelerationY = 0
+      rockman.frictionY = rockman.drag
     }
   }
 
   down.press = () => {
-    rockman.accelerationY = ACCELERATION_Y
+    rockman.accelerationY = rockman.speed
+    rockman.frictionY = 1
   }
 
   down.release = () => {
     if (!up.isDown) {
       rockman.accelerationY = 0
+      rockman.frictionY = rockman.drag
     }
   }
 }

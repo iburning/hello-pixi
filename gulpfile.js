@@ -19,8 +19,9 @@ gulp.task('default', ['script', 'views', 'assets'])
 gulp.task('script', () => {
   return gulp.src([
     './node_modules/pixi.js/dist/*',
+    './bower_components/contain/contain.js',
     './bower_components/keyboard/keyboard.js',
-    './bower_components/scaleToWindow/scaleToWindow.js',
+    './bower_components/scaleToWindow/scaleToWindow.js'
   ])
     .pipe(gulp.dest('./dist/script'))
 })
