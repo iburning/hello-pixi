@@ -28,7 +28,7 @@ gulp.task('script', () => {
 
 gulp.task('views', () => {
   return gulp.src([
-    './src/*/index.html'
+    './src/*/*.html'
   ])
     .pipe(gulp.dest('./dist'))
 })

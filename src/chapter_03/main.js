@@ -20,12 +20,12 @@ const UNIT = 32
 const LINE_ALPHA = 1
 const LINE_COLOR = 0x333333
 const LINE_THICKNESS = 1
-const SHAPE_BACKGROUND_COLOR = 0xffffff;
+const SHAPE_BACKGROUND_COLOR = 0xffffff
 
 const renderer = Renderer(UNIT * 2 * 16, UNIT * 2 * 9)
 //Set the canvas's border style and background color
-renderer.view.style.border = "1px solid #ccc";
-renderer.backgroundColor = "0xFFFFFF";
+renderer.view.style.border = "1px solid #ccc"
+renderer.backgroundColor = "0xFFFFFF"
 
 // Add the canvas to the HTML document
 document.getElementById("pixi").appendChild(renderer.view)
@@ -52,7 +52,7 @@ function setup() {
 
   // Set the fill color
   // shape.beginFill(hexColorCode)
-  rectangle.beginFill(0xFFFFFF);
+  rectangle.beginFill(0xFFFFFF)
 
   // Set the line style
   // shape.lineStyle(lineThickness, hexColorCode, alpha)
@@ -78,7 +78,7 @@ function setup() {
 
 
   // let rectangle2 = new Graphics()
-  // rectangle2.beginFill(0xFFFFFF);
+  // rectangle2.beginFill(0xFFFFFF)
   // rectangle2.lineStyle(10, 0x333333, 1)
   // rectangle2.drawRect(0, 0, UNIT * 5, UNIT * 5)
   // rectangle2.endFill()
