@@ -32,14 +32,22 @@ document.getElementById("pixi").appendChild(renderer.view)
 // Create a container object called the 'stage'
 const stage = new Container()
 
+let gameScene = null
+let gameOverScene = null
+
 // Set the initial game state
 let state = play
-
 let explorer = null
 let explorerSpeed = 5
 // An array to store all the blob monsters
 let blobs = []
+let blobSpeed = 5
+let treasure = null
+let door = null
+let healthBar = null
+let message = null
 
+linkFont("assets/Pixilator.ttf")
 
 // Load resources (images and fonts) and run the 'setup' function when it's done
 Loader.add([
@@ -51,10 +59,10 @@ Loader.add([
 function setup() {
   // Create an 'id' alias for the texture atlas frame ids
   id = Resources["assets/treasureHunter.json"].textures
-  console.log('id', id)
+  // console.log('id', id)
 
   // The 'gameScene' container that contains all the main game sprites
-  let gameScene = new Container()
+  gameScene = new Container()
   stage.addChild(gameScene)
 
   // Create the main sprites:
@@ -63,7 +71,7 @@ function setup() {
   gameScene.addChild(dungeon)
 
   // The 'door' sprite
-  let door = new Sprite(id['door.png'])
+  door = new Sprite(id['door.png'])
   door.position.set(32, 0)
   gameScene.addChild(door)
 
@@ -76,7 +84,7 @@ function setup() {
   gameScene.addChild(explorer)
 
   // The 'treasure' sprite
-  let treasure = new Sprite(id['treasure.png'])
+  treasure = new Sprite(id['treasure.png'])
   treasure.x = gameScene.width - treasure.height - 48
   treasure.y = (gameScene.height - treasure.height) / 2
   gameScene.addChild(treasure)
@@ -85,7 +93,6 @@ function setup() {
   let numberOfBlobs = 6
   let spacing = 48
   let xOffset = 150
-  let speed = 2
   let direction = 1
 
   // Make as many blobs as there are 'numberOfBlobs'
@@ -108,7 +115,7 @@ function setup() {
     // Set the blob's vertical velocity. 'direction' will be either '1' or '-1'.
     // '1' means enemy will move down and '-1' means the blob will move up.
     // Multiplying 'direction' by 'speed' determines the blob's vertical direction
-    blob.vy = speed * direction
+    blob.vy = blobSpeed * direction
 
     // Reverse the direction for the next blob
     direction *= -1
@@ -118,6 +125,22 @@ function setup() {
     // Add the blob to the 'gameScene'
     gameScene.addChild(blob)
   }
+
+  healthBar = initHealthBar()
+  healthBar.position.set(stage.width - 170, 4)
+  gameScene.addChild(healthBar)
+
+  // Create the 'gameOver' scene
+  gameOverScene = new Container()
+  stage.addChild(gameOverScene)
+  // Make the 'gameOver' scene invisible when the game first starts
+  gameOverScene.visible = false
+
+  // Create the text sprite and add it to the 'gameOver' scene
+  message = new Text("The End!", { font: "48px Pixilator" })
+  message.x = (stage.width - message.width) / 2
+  message.y = stage.height / 2 - 32
+  gameOverScene.addChild(message)
 
   // Bind keyboard
   bindKeyBorad()
@@ -186,17 +209,63 @@ function play() {
     explorer.alpha = 0.5
 
     // Reduce the width of the health bar's inner rectangle by 1 pixel
-    // healthBar.outer.width -= 1
+    healthBar.outer.width -= 5
   }
   else {
     // Make the explorer fully opaque (non-transparent) if it hasn't been hit
     explorer.alpha = 1
   }
+
+
+  // Check for a collision between the explorer and the treasure
+  if (bump.hitTestRectangle(explorer, treasure)) {
+    // If the treasure is touching the explorer, center it over the explorer
+    treasure.x = explorer.x + 8
+    treasure.y = explorer.y + 8
+  }
+
+  // Does the explorer have enough health? If the width of the `innerBar`
+  // is less than zero, end the game and display "You lost!"
+  if (healthBar.outer.width <= 0) {
+    state = end
+    message.text = "You lost!"
+  }
+
+  // If the explorer has brought the treasure to the exit,
+  // end the game and display "You won!"
+  if (bump.hitTestRectangle(treasure, door)) {
+    state = end
+    message.text = "You won!";
+  }
 }
 
 
 function end() {
-  // All the code that should run at the end of the game goes here
+  gameScene.visible = false
+  gameOverScene.visible = true
+}
+
+function initHealthBar() {
+  // Create the health bar
+  let healthBar = new Container()
+
+  // Create the black background rectangle
+  let innerBar = new Graphics()
+  innerBar.beginFill(0)
+  innerBar.drawRect(0, 0, 128, 8)
+  innerBar.endFill()
+  healthBar.addChild(innerBar)
+
+  // Create the front red rectangle
+  let outerBar = new Graphics()
+  outerBar.beginFill(16724736)
+  outerBar.drawRect(0, 0, 128, 8)
+  outerBar.endFill()
+  healthBar.addChild(outerBar)
+
+  healthBar.outer = outerBar
+
+  return healthBar
 }
 
 
@@ -263,8 +332,24 @@ function bindKeyBorad() {
 
 
 // The game's helper functions:
-// 'keyboard', 'hitTestRectangle', 'contain' and 'randomInt'
 
 function randomInt(min, max) {
   return Math.floor(Math.random() * (max - min + 1)) + min
+}
+
+
+function linkFont(source) {
+  // console.log("linkFont", source)
+  // Use the font's filename as the 'fontFamily' name.
+  // This code captures the font file's name without the extension or file path
+  let fontFamily = source.split("/").pop().split(".")[0]
+
+  // Append an '@font-face' style rule to the head of the HTML document
+  let newStyle = document.createElement("style")
+  let fontFace = `@font-face {
+    font-family: "${fontFamily}";
+    src: url("${source}");
+  }`
+  newStyle.appendChild(document.createTextNode(fontFace))
+  document.head.appendChild(newStyle)
 }
