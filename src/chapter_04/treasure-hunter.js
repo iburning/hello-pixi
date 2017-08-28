@@ -38,7 +38,7 @@ let gameOverScene = null
 // Set the initial game state
 let state = play
 let explorer = null
-let explorerSpeed = 5
+let explorerSpeed = 2
 // An array to store all the blob monsters
 let blobs = []
 let blobSpeed = 5
