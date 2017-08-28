@@ -16,6 +16,7 @@ module.exports = {
     'chapter_03': './src/chapter_03/main.js',
     'chapter_03/displaying-text': './src/chapter_03/displaying-text.js',
     'chapter_04/collision-detection': './src/chapter_04/collision-detection.js',
+    'chapter_04/treasure-hunter': './src/chapter_04/treasure-hunter.js',
   },
 
   output: {
