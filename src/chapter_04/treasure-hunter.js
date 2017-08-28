@@ -35,6 +35,8 @@ const stage = new Container()
 // Set the initial game state
 let state = play
 
+let explorer = null
+let explorerSpeed = 5
 // An array to store all the blob monsters
 let blobs = []
 
@@ -66,7 +68,7 @@ function setup() {
   gameScene.addChild(door)
 
   // The 'explorer' sprite
-  let explorer = new Sprite(id['explorer.png'])
+  explorer = new Sprite(id['explorer.png'])
   explorer.x = 64
   explorer.y = (gameScene.height - explorer.height) / 2
   explorer.vx = 0
@@ -117,6 +119,9 @@ function setup() {
     gameScene.addChild(blob)
   }
 
+  // Bind keyboard
+  bindKeyBorad()
+
   // Set the game's current state to 'play'
   state = play
 
@@ -140,18 +145,25 @@ function gameLoop() {
 function play() {
   // All the game logic goes here
 
+  let area = { x: 28, y: 10, width: 488, height: 480 }
+
+  // Use the explorer's velocity to make it move
+  explorer.x += explorer.vx
+  explorer.y += explorer.vy
+
+  // Contain the explorer inside the area of the dungeon
+  bump.contain(explorer, area)
+
+  // Set 'explorerHit' to 'false' before checking for a collision
+  var explorerHit = false
+
   // Loop through all the sprites in the 'enemies' array
   blobs.forEach(blob => {
     // Move the blob
     blob.y += blob.vy
 
     // Check the blob's screen boundaries
-    let blobHitsWall = bump.contain(blob, {
-      x: 28,
-      y: 10,
-      width: 488,
-      height: 480
-    })
+    let blobHitsWall = bump.contain(blob, area)
 
     // If the blob hits the top or bottom of the stage,
     // reverse its direction
@@ -163,15 +175,90 @@ function play() {
 
     // Test for a collision. If any of the enemies are touching the explorer,
     // set 'explorerHit' to 'true'
-    // if (bump.hitTestRectangle(explorer, blob)) {
-    //   explorerHit = true
-    // }
+    if (bump.hitTestRectangle(explorer, blob)) {
+      explorerHit = true
+    }
   })
+
+  // If the explorer is hit...
+  if (explorerHit) {
+    // Make the explorer semi-transparent
+    explorer.alpha = 0.5
+
+    // Reduce the width of the health bar's inner rectangle by 1 pixel
+    // healthBar.outer.width -= 1
+  }
+  else {
+    // Make the explorer fully opaque (non-transparent) if it hasn't been hit
+    explorer.alpha = 1
+  }
 }
 
 
 function end() {
   // All the code that should run at the end of the game goes here
+}
+
+
+function bindKeyBorad() {
+  // Capture the keyboard arrow keys
+  let left = keyboard(37)
+  let right = keyboard(39)
+  let up = keyboard(38)
+  let down = keyboard(40)
+
+  // Left arrow key 'press' method
+  left.press = function () {
+    // Change the explorer's velocity when the key is pressed
+    explorer.vx = -explorerSpeed
+    explorer.vy = 0
+  }
+
+  // Left arrow key 'elease' method
+  left.release = function () {
+    // If the left arrow has been released, and the right arrow isn't down,
+    // and the explorer isn't moving vertically, stop the sprite from moving
+    // by setting its velocity to zero
+    if (!right.isDown && explorer.vy === 0) {
+      explorer.vx = 0
+    }
+  }
+
+  //Right
+  right.press = function () {
+    explorer.vx = explorerSpeed
+    explorer.vy = 0
+  }
+
+  right.release = function () {
+    if (!left.isDown && explorer.vy === 0) {
+      explorer.vx = 0
+    }
+  }
+
+  // Up
+  up.press = function () {
+    explorer.vy = -explorerSpeed
+    explorer.vx = 0
+  }
+
+  up.release = function () {
+    if (!down.isDown && explorer.vx === 0) {
+      explorer.vy = 0
+    }
+  }
+
+  // Down
+  down.press = function () {
+    explorer.vy = explorerSpeed
+    explorer.vx = 0
+  }
+
+  down.release = function () {
+    if (!up.isDown && explorer.vx === 0) {
+      explorer.vy = 0
+    }
+  }
 }
 
 
