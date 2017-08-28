@@ -15,6 +15,7 @@ module.exports = {
     'chapter_02': './src/chapter_02/main.js',
     'chapter_03': './src/chapter_03/main.js',
     'chapter_03/displaying-text': './src/chapter_03/displaying-text.js',
+    'chapter_04/collision-detection': './src/chapter_04/collision-detection.js',
   },
 
   output: {
@@ -46,7 +47,7 @@ module.exports = {
   },
 
   devServer: {
-    historyApiFallback: true,
+    // historyApiFallback: true,
     noInfo: true,
     contentBase: './dist',
     // host: host,

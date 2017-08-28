@@ -24,6 +24,7 @@
     "tink": "https://github.com/kittykatattack/tink.git",
     "scaleToWindow": "https://github.com/kittykatattack/scaleToWindow.git",
     "keyboard": "https://github.com/kittykatattack/keyboard.git",
-    "contain": "https://github.com/kittykatattack/contain.git"
+    "contain": "https://github.com/kittykatattack/contain.git",
+    "bump": "https://github.com/kittykatattack/bump.git"
   }
 }

@@ -1,7 +1,7 @@
 /**
  * @fileoverview gulpfile
  * @author burning (www.cafeinit.com)
- * @version 2017.08.27
+ * @version 2017.08.28
  */
 
 const gulp = require('gulp')
@@ -19,6 +19,7 @@ gulp.task('default', ['script', 'views', 'assets'])
 gulp.task('script', () => {
   return gulp.src([
     './node_modules/pixi.js/dist/*',
+    './bower_components/bump/bin/*',
     './bower_components/contain/contain.js',
     './bower_components/keyboard/keyboard.js',
     './bower_components/scaleToWindow/scaleToWindow.js'

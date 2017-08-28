@@ -123,7 +123,7 @@ function play() {
   rockman.x += rockman.vx
   rockman.y += rockman.vy
 
-  //Use the `contain` function to keep the sprite inside the canvas
+  // Use the 'contain' function to keep the sprite inside the canvas
   let collision = contain(rockman, {
     x: 0,
     y: 0,
