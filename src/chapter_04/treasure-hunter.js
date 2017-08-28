@@ -35,6 +35,9 @@ const stage = new Container()
 // Set the initial game state
 let state = play
 
+// An array to store all the blob monsters
+let blobs = []
+
 
 // Load resources (images and fonts) and run the 'setup' function when it's done
 Loader.add([
@@ -82,9 +85,6 @@ function setup() {
   let xOffset = 150
   let speed = 2
   let direction = 1
-
-  //An array to store all the blob monsters
-  let blobs = []
 
   // Make as many blobs as there are 'numberOfBlobs'
   for (let i = 0; i < numberOfBlobs; i++) {
@@ -139,6 +139,34 @@ function gameLoop() {
 
 function play() {
   // All the game logic goes here
+
+  // Loop through all the sprites in the 'enemies' array
+  blobs.forEach(blob => {
+    // Move the blob
+    blob.y += blob.vy
+
+    // Check the blob's screen boundaries
+    let blobHitsWall = bump.contain(blob, {
+      x: 28,
+      y: 10,
+      width: 488,
+      height: 480
+    })
+
+    // If the blob hits the top or bottom of the stage,
+    // reverse its direction
+    if (blobHitsWall) {
+      if (blobHitsWall.has("top") || blobHitsWall.has("bottom")) {
+        blob.vy *= -1
+      }
+    }
+
+    // Test for a collision. If any of the enemies are touching the explorer,
+    // set 'explorerHit' to 'true'
+    // if (bump.hitTestRectangle(explorer, blob)) {
+    //   explorerHit = true
+    // }
+  })
 }
 
 
