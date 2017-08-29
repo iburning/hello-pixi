@@ -7,6 +7,7 @@
 import { Container, Loader, Renderer, Text } from './PIXI'
 import Ball from './Ball'
 import Bat from './Bat'
+import ScoreView from './ScoreView'
 
 const UNIT = 8
 const GRAVITY = 0.15  // 重力加速度
@@ -33,7 +34,11 @@ let gameOverScene = null
 let state = play
 let ball = new Ball(UNIT * 2)
 let bat = new Bat(UNIT * 15, UNIT * 2)  // 球拍，防止穿越，球拍厚度要大于小球的直径
+let scoreDisplay = null
 let message = null
+let score = 0
+let miss = 0
+let health = 3
 
 linkFont("assets/Pixilator.ttf")
 
@@ -46,6 +51,12 @@ Loader.add([
 function setup() {
   gameScene = new Container()
   stage.addChild(gameScene)
+
+  // 因为依赖字体下载，所以将实例化放在setup中
+  scoreDisplay = new ScoreView(0)
+  scoreDisplay.view.x = (renderer.view.width - scoreDisplay.view.width) / 2
+  scoreDisplay.view.y = UNIT * 3
+  gameScene.addChild(scoreDisplay.view)
 
   ball.speed = 10
   ball.vx = 5
@@ -62,8 +73,12 @@ function setup() {
 
 
   gameOverScene = new Container()
+  stage.addChild(gameOverScene)
+  let message = new Text("Game Over", { font: "48px Pixilator" })
+  message.x = (renderer.view.width - message.width) / 2
+  message.y = (renderer.view.height - message.height) / 2
+  gameOverScene.addChild(message)
   gameOverScene.visible = false
-
 
   // Set the game's current state to 'play'
   state = play
@@ -101,7 +116,7 @@ function play() {
   })
 
   if (collision) {
-    console.log("collision", collision, ball.vx, ball.vy)
+    console.log("collision", collision, score, miss, ball.vx, ball.vy)
     // Reverse the sprite's 'vx' value if it hits the left or right
     if (collision.has("left") || collision.has("right")) {
       ball.vx = -ball.vx
@@ -112,6 +127,12 @@ function play() {
     }
 
     if (collision.has("bottom")) {
+      health--
+      miss++
+      scoreDisplay.setMiss(miss)
+      if (health <= 0) {
+        state = end
+      }
       // ball.vy = -ball.vy
       ball.vx = (ball.vx > 0) ? ball.speed : -ball.speed
       ball.vy = -ball.speed
@@ -128,6 +149,11 @@ function play() {
   let hitTest = bump.rectangleCollision(ball, bat)
   if (hitTest) {
     console.log('hitTest', hitTest)
+    if (hitTest == "bottom") {
+      score++
+      scoreDisplay.setScore(score)
+    }
+
     if (hitTest == "top" || hitTest == "bottom") {
       if (Math.abs(ball.vx) < ball.maxSpeed) {
         ball.vx += ball.acceleration
@@ -144,7 +170,7 @@ function play() {
 
 
 function end() {
-  gameScene.visible = false
+  // gameScene.visible = false
   gameOverScene.visible = true
 }
 
