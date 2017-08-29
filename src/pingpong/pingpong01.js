@@ -9,6 +9,7 @@ import Ball from './Ball'
 import Bat from './Bat'
 
 const UNIT = 8
+const GRAVITY = 0.15  // 重力加速度
 
 // Create a new instance of the Bump collision library
 const bump = new Bump(PIXI)
@@ -31,7 +32,7 @@ let gameOverScene = null
 // Set the initial game state
 let state = play
 let ball = new Ball(UNIT * 2)
-let bat = new Bat(UNIT * 10, UNIT)  // 球拍
+let bat = new Bat(UNIT * 15, UNIT * 2)  // 球拍，防止穿越，球拍厚度要大于小球的直径
 let message = null
 
 linkFont("assets/Pixilator.ttf")
@@ -46,13 +47,16 @@ function setup() {
   gameScene = new Container()
   stage.addChild(gameScene)
 
+  ball.speed = 10
   ball.vx = 5
-  ball.vy = 10
+  ball.vy = ball.speed
+  ball.maxSpeed = 18
+  ball.acceleration =  2
   gameScene.addChild(ball)
 
   bat.x = (renderer.view.width - bat.width) / 2
   bat.y = renderer.view.height - UNIT * 10
-  bat.speed = 10
+  bat.speed = 15
   bindKeyBorad(bat)
   gameScene.addChild(bat)
 
@@ -82,6 +86,7 @@ function gameLoop() {
 
 
 function play() {
+  ball.vy += GRAVITY
   ball.x += ball.vx
   ball.y += ball.vy
 
@@ -96,15 +101,20 @@ function play() {
   })
 
   if (collision) {
-    // console.log("collision", collision)
+    console.log("collision", collision, ball.vx, ball.vy)
     // Reverse the sprite's 'vx' value if it hits the left or right
     if (collision.has("left") || collision.has("right")) {
       ball.vx = -ball.vx
     }
 
-    // Reverse the sprite's 'vy' vlaue if it hits the top or bottom
-    if (collision.has("top") || collision.has("bottom")) {
+    if (collision.has("top")) {
       ball.vy = -ball.vy
+    }
+
+    if (collision.has("bottom")) {
+      // ball.vy = -ball.vy
+      ball.vx = (ball.vx > 0) ? ball.speed : -ball.speed
+      ball.vy = -ball.speed
     }
   }
 
@@ -119,6 +129,14 @@ function play() {
   if (hitTest) {
     console.log('hitTest', hitTest)
     if (hitTest == "top" || hitTest == "bottom") {
+      if (Math.abs(ball.vx) < ball.maxSpeed) {
+        ball.vx += ball.acceleration
+      }
+
+      if (Math.abs(ball.vy) < ball.maxSpeed) {
+        ball.vy += ball.acceleration
+      }
+
       ball.vy = -ball.vy
     }
   }
