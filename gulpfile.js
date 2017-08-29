@@ -22,7 +22,8 @@ gulp.task('script', () => {
     './bower_components/bump/bin/*',
     './bower_components/contain/contain.js',
     './bower_components/keyboard/keyboard.js',
-    './bower_components/scaleToWindow/scaleToWindow.js'
+    './bower_components/scaleToWindow/scaleToWindow.js',
+    './bower_components/tink/bin/*',
   ])
     .pipe(gulp.dest('./dist/script'))
 })

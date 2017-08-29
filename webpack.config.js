@@ -17,6 +17,7 @@ module.exports = {
     'chapter_03/displaying-text': './src/chapter_03/displaying-text.js',
     'chapter_04/collision-detection': './src/chapter_04/collision-detection.js',
     'chapter_04/treasure-hunter': './src/chapter_04/treasure-hunter.js',
+    'chapter_07/setting-up-tink': './src/chapter_07/setting-up-tink.js',
     'pingpong/01': './src/pingpong/pingpong01.js',
   },
 
