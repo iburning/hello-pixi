@@ -18,6 +18,8 @@ const TextureCache = PIXI.utils.TextureCache
 const Texture = PIXI.Texture
 
 const UNIT = 8
+const GRAVITY = 1
+const COLOR_BLACK = 0x333333
 const COLOR_WHITE = 0xFFFFFF
 
 // Create a Pixi stage and renderer
@@ -32,6 +34,7 @@ document.getElementById("pixi").appendChild(renderer.view)
 
 // Set the initial game state
 let state = play
+let gameScene
 
 // Create a new instance of Bump, the collision module
 const bump = new Bump(PIXI)
@@ -41,7 +44,9 @@ const bump = new Bump(PIXI)
 const tink = new Tink(PIXI, renderer.view)
 
 // Define any variables that might be used in more than one function
-
+let sprite
+let boxs = {}
+let boxId = 0
 
 
 // Append link tag to html header
@@ -55,12 +60,34 @@ Loader.add([
 
 
 function setup() {
+  gameScene = new Container()
+  stage.addChild(gameScene)
 
   // Make the pointer
   const pointer = tink.makePointer()
   pointer.tap = () => {
-    console.log('tap')
+    // console.log('tap', pointer.x, pointer.y)
+
+    let grapich = new Graphics()
+    grapich.beginFill(COLOR_BLACK)
+    grapich.lineStyle(0)
+    grapich.drawRect(0, 0, UNIT * 5, UNIT * 5)
+    grapich.endFill()
+
+    let box = new Sprite(grapich.generateTexture())
+    box.anchor.set(0.5, 0.5)
+    box.x = pointer.x
+    box.y = pointer.y
+    box.vy = 0
+    box.id = boxId
+    gameScene.addChild(box)
+    // console.log('box', boxId, box.id, box)
+
+    boxs[boxId] = box
+    boxId++
   }
+
+  // pointer.hitTestSprite(sprite)
 
   // Start the game loop
   gameLoop()
@@ -84,7 +111,25 @@ function gameLoop() {
 function play() {
   // Any animation or game logic code goes here
 
+  // boxs.forEach(box => {
+  //   box.y += box.vy
+  //   box.vy += GRAVITY
+  // })
 
+  for (let id in boxs) {
+    let box = boxs[id]
+    if (box) {
+      box.y += box.vy
+      box.vy += GRAVITY
+
+      bump.contain(box, {
+        x: 0,
+        y: 0,
+        width: renderer.view.width,
+        height: renderer.view.height
+      })
+    }
+  }
 }
 
 function end() {
