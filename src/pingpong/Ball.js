@@ -16,6 +16,10 @@ export default class Ball {
     grapich.endFill()
 
     let sprite = new Sprite(grapich.generateTexture())
+    sprite.x = 0
+    sprite.y = 0
+    sprite.vx = 0
+    sprite.vy = 0
     // console.log('Ball', sprite)
     return sprite
   }

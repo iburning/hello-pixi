@@ -31,7 +31,7 @@ let gameOverScene = null
 // Set the initial game state
 let state = play
 let ball = new Ball(UNIT * 2)
-let bat = new Bat(UNIT * 15, UNIT)  // 球拍
+let bat = new Bat(UNIT * 10, UNIT)  // 球拍
 let message = null
 
 linkFont("assets/Pixilator.ttf")
@@ -46,15 +46,20 @@ function setup() {
   gameScene = new Container()
   stage.addChild(gameScene)
 
+  ball.vx = 5
+  ball.vy = 10
   gameScene.addChild(ball)
 
   bat.x = (renderer.view.width - bat.width) / 2
-  bat.y = renderer.view.height - UNIT * 2
+  bat.y = renderer.view.height - UNIT * 10
+  bat.speed = 10
+  bindKeyBorad(bat)
   gameScene.addChild(bat)
 
 
   gameOverScene = new Container()
   gameOverScene.visible = false
+
 
   // Set the game's current state to 'play'
   state = play
@@ -77,7 +82,46 @@ function gameLoop() {
 
 
 function play() {
+  ball.x += ball.vx
+  ball.y += ball.vy
 
+  bat.x += bat.vx
+  bat.y += bat.vy
+
+  let collision = bump.contain(ball, {
+    x: 0,
+    y: 0,
+    width: renderer.view.width,
+    height: renderer.view.height
+  })
+
+  if (collision) {
+    // console.log("collision", collision)
+    // Reverse the sprite's 'vx' value if it hits the left or right
+    if (collision.has("left") || collision.has("right")) {
+      ball.vx = -ball.vx
+    }
+
+    // Reverse the sprite's 'vy' vlaue if it hits the top or bottom
+    if (collision.has("top") || collision.has("bottom")) {
+      ball.vy = -ball.vy
+    }
+  }
+
+  bump.contain(bat, {
+    x: UNIT,
+    y: renderer.view.height - UNIT * 20,
+    width: renderer.view.width - UNIT,
+    height: renderer.view.height - UNIT
+  })
+
+  let hitTest = bump.rectangleCollision(ball, bat)
+  if (hitTest) {
+    console.log('hitTest', hitTest)
+    if (hitTest == "top" || hitTest == "bottom") {
+      ball.vy = -ball.vy
+    }
+  }
 }
 
 
@@ -101,4 +145,66 @@ function linkFont(source) {
   }`
   newStyle.appendChild(document.createTextNode(fontFace))
   document.head.appendChild(newStyle)
+}
+
+
+function bindKeyBorad(object) {
+  // Capture the keyboard arrow keys
+  let left = keyboard(37)
+  let right = keyboard(39)
+  let up = keyboard(38)
+  let down = keyboard(40)
+
+  // Left arrow key 'press' method
+  left.press = function () {
+    // Change the object's velocity when the key is pressed
+    object.vx = -object.speed
+    object.vy = 0
+  }
+
+  // Left arrow key 'elease' method
+  left.release = function () {
+    // If the left arrow has been released, and the right arrow isn't down,
+    // and the object isn't moving vertically, stop the sprite from moving
+    // by setting its velocity to zero
+    if (!right.isDown && object.vy === 0) {
+      object.vx = 0
+    }
+  }
+
+  //Right
+  right.press = function () {
+    object.vx = object.speed
+    object.vy = 0
+  }
+
+  right.release = function () {
+    if (!left.isDown && object.vy === 0) {
+      object.vx = 0
+    }
+  }
+
+  // Up
+  up.press = function () {
+    object.vy = -object.speed
+    object.vx = 0
+  }
+
+  up.release = function () {
+    if (!down.isDown && object.vx === 0) {
+      object.vy = 0
+    }
+  }
+
+  // Down
+  down.press = function () {
+    object.vy = object.speed
+    object.vx = 0
+  }
+
+  down.release = function () {
+    if (!up.isDown && object.vx === 0) {
+      object.vy = 0
+    }
+  }
 }
