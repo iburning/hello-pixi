@@ -31,6 +31,9 @@
     "babel-preset-env": "^1.6.0",
     "cross-env": "^5.0.5",
     "gulp": "^3.9.1",
+    "gulp-clean-css": "^3.7.0",
+    "gulp-less": "^3.3.2",
+    "less-plugin-autoprefix": "^1.5.1",
     "webpack": "^3.5.5",
     "webpack-dev-server": "^2.7.1"
   }

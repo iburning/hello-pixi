@@ -8,6 +8,7 @@ const path = require('path')
 const webpack = require('webpack')
 
 let host = process.env.LOCALHOST || 'localhost'
+// let host = '192.168.10.48'
 
 module.exports = {
   entry: {
@@ -18,6 +19,7 @@ module.exports = {
     'chapter_04/collision-detection': './src/chapter_04/collision-detection.js',
     'chapter_04/treasure-hunter': './src/chapter_04/treasure-hunter.js',
     'chapter_07/setting-up-tink': './src/chapter_07/setting-up-tink.js',
+    'chapter_07/drag-and-drop': './src/chapter_07/drag-and-drop.js',
     'pingpong/01': './src/pingpong/pingpong01.js',
   },
 
@@ -53,7 +55,7 @@ module.exports = {
     // historyApiFallback: true,
     noInfo: true,
     contentBase: './dist',
-    // host: host,
+    host: host,
     // port: config.port
   },
 
