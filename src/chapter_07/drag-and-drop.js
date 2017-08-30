@@ -47,7 +47,7 @@ const tink = new Tink(PIXI, renderer.view, scale)
 // Define any variables that might be used in more than one function
 let sprite
 let box
-let box1
+let box2
 
 
 // Append link tag to html header

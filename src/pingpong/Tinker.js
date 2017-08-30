@@ -1,17 +1,18 @@
 /**
- * @fileoverview Bat
+ * @fileoverview Tinker
  * @author burning <iburning@live.cn>
- * @version 2017.08.29
+ * @version 2017.08.30
  */
 
 import { Graphics, Sprite } from './PIXI'
 
-export default class Bat {
-  constructor(width, height) {
+export default class Tinker {
+  constructor(width, height, alpha) {
+    alpha = alpha || 0
     let grapich = new Graphics()
 
-    grapich.beginFill(0x333333)
-    grapich.lineStyle(1, 0x333333, 1)
+    grapich.beginFill(0x000000, alpha)
+    grapich.lineStyle(0)
     grapich.drawRect(0, 0, width, height)
     grapich.endFill()
 

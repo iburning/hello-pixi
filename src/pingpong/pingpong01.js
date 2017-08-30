@@ -4,9 +4,10 @@
  * @version 2017.08.29
  */
 
-import { Container, Loader, Renderer, Text } from './PIXI'
+import { Container, Loader, Renderer, Resources, Text } from './PIXI'
 import Ball from './Ball'
 import Bat from './Bat'
+import Tinker from './Tinker'
 import ScoreView from './ScoreView'
 
 const UNIT = 8
@@ -18,14 +19,23 @@ const bump = new Bump(PIXI)
 // Create a Pixi renderer
 const renderer = Renderer(UNIT * 20 * 3, UNIT * 20 * 4)
 // Set the canvas's border style and background color
-renderer.view.style.border = "1px solid #333333"
+// renderer.view.style.border = "1px solid #333333"
 renderer.backgroundColor = "0xEFEFEF"
 
 // Add the canvas to the HTML document
-document.getElementById("pixi").appendChild(renderer.view)
+// document.getElementById("pixi").appendChild(renderer.view)
+document.body.appendChild(renderer.view)
+
+// Scale the canvas to the maximum window
+let scale = scaleToWindow(renderer.view) || 1
+console.log('scale', scale)
+
+// Create a new instance of Tink, the interactive module.
+const tink = new Tink(PIXI, renderer.view, scale)
 
 // Create a container object called the 'stage'
 const stage = new Container()
+
 
 let gameScene = null
 let gameOverScene = null
@@ -34,6 +44,7 @@ let gameOverScene = null
 let state = play
 let ball = new Ball(UNIT * 2)
 let bat = new Bat(UNIT * 15, UNIT * 2)  // 球拍，防止穿越，球拍厚度要大于小球的直径
+let batTinker = new Tinker(UNIT * 15, UNIT * 15)
 let scoreDisplay = null
 let message = null
 let score = 0
@@ -49,6 +60,8 @@ Loader.add([
 
 
 function setup() {
+  // console.log('Resources', Resources)
+
   gameScene = new Container()
   stage.addChild(gameScene)
 
@@ -66,10 +79,28 @@ function setup() {
   gameScene.addChild(ball)
 
   bat.x = (renderer.view.width - bat.width) / 2
-  bat.y = renderer.view.height - UNIT * 10
-  bat.speed = 15
-  bindKeyBorad(bat)
+  bat.y = renderer.view.height - UNIT * 30
+  // bindKeyBorad(bat)
   gameScene.addChild(bat)
+  // tink.makeDraggable(bat)
+
+  batTinker.x = (renderer.view.width - batTinker.width) / 2
+  batTinker.y = renderer.view.height - UNIT * 30
+  // bindKeyBorad(bat)
+  gameScene.addChild(batTinker)
+  tink.makeDraggable(batTinker)
+
+  // // Make the pointer
+  // const pointer = tink.makePointer()
+  // pointer.tap = () => {
+  //   // console.log('tap', pointer.x, pointer.y)
+  // }
+  //
+  // pointer.press = () => {
+  //   // console.log('press', pointer.x, pointer.y)
+  //   batTinker.x = pointer.x
+  //   batTinker.y = pointer.y
+  // }
 
 
   gameOverScene = new Container()
@@ -95,6 +126,8 @@ function gameLoop() {
   // Run the current state
   state()
 
+  tink.update()   // !important
+
   // Render the stage
   renderer.render(stage)
 }
@@ -105,8 +138,17 @@ function play() {
   ball.x += ball.vx
   ball.y += ball.vy
 
-  bat.x += bat.vx
-  bat.y += bat.vy
+  // bat.x += bat.vx
+  // bat.y += bat.vy
+  bat.x = batTinker.x
+  // bat.y = batTinker.y - UNIT * 5
+
+  bump.contain(bat, {
+    x: UNIT,
+    y: renderer.view.height / 2,
+    width: renderer.view.width - UNIT,
+    height: renderer.view.height - UNIT
+  })
 
   let collision = bump.contain(ball, {
     x: 0,
@@ -138,13 +180,6 @@ function play() {
       ball.vy = -ball.speed
     }
   }
-
-  bump.contain(bat, {
-    x: UNIT,
-    y: renderer.view.height - UNIT * 20,
-    width: renderer.view.width - UNIT,
-    height: renderer.view.height - UNIT
-  })
 
   let hitTest = bump.rectangleCollision(ball, bat)
   if (hitTest) {
