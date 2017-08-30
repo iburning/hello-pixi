@@ -95,6 +95,7 @@ function play() {
   // Any animation or game logic code goes here
 }
 
+
 function end() {
   console.log("end")
 }
