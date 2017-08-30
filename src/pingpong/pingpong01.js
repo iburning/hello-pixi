@@ -95,13 +95,17 @@ function setup() {
   pointer.press = () => {
     console.log('press', pointer.x, pointer.y)
     // Set the game's current state to 'play'
-    state = play
+    if (state != end) {
+      state = play
+    }
   }
 
   pointer.release = () => {
     console.log('release', pointer.x, pointer.y)
     // Set the game's current state to 'play'
-    state = stop
+    if (state != end) {
+      state = stop
+    }
   }
 
   // pointer.press = () => {
@@ -115,7 +119,7 @@ function setup() {
   stage.addChild(gameOverScene)
   let message = new Text("Game Over", { font: "48px Pixilator" })
   message.x = (renderer.view.width - message.width) / 2
-  message.y = (renderer.view.height - message.height) / 2
+  message.y = (renderer.view.height - message.height) / 2 - UNIT * 10
   gameOverScene.addChild(message)
   gameOverScene.visible = false
 

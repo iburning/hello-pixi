@@ -20,6 +20,7 @@ module.exports = {
     'chapter_04/treasure-hunter': './src/chapter_04/treasure-hunter.js',
     'chapter_07/setting-up-tink': './src/chapter_07/setting-up-tink.js',
     'chapter_07/drag-and-drop': './src/chapter_07/drag-and-drop.js',
+    'chapter_07/button': './src/chapter_07/button.js',
     'pingpong/01': './src/pingpong/pingpong01.js',
   },
 
