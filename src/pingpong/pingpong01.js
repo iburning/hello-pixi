@@ -41,7 +41,7 @@ let gameScene = null
 let gameOverScene = null
 
 // Set the initial game state
-let state = play
+let state = stop
 let ball = new Ball(UNIT * 2)
 let bat = new Bat(UNIT * 15, UNIT * 2)  // 球拍，防止穿越，球拍厚度要大于小球的直径
 let batTinker = new Tinker(UNIT * 15, UNIT * 15)
@@ -90,12 +90,20 @@ function setup() {
   gameScene.addChild(batTinker)
   tink.makeDraggable(batTinker)
 
-  // // Make the pointer
-  // const pointer = tink.makePointer()
-  // pointer.tap = () => {
-  //   // console.log('tap', pointer.x, pointer.y)
-  // }
-  //
+  // Make the pointer
+  const pointer = tink.makePointer()
+  pointer.press = () => {
+    console.log('press', pointer.x, pointer.y)
+    // Set the game's current state to 'play'
+    state = play
+  }
+
+  pointer.release = () => {
+    console.log('release', pointer.x, pointer.y)
+    // Set the game's current state to 'play'
+    state = stop
+  }
+
   // pointer.press = () => {
   //   // console.log('press', pointer.x, pointer.y)
   //   batTinker.x = pointer.x
@@ -110,9 +118,6 @@ function setup() {
   message.y = (renderer.view.height - message.height) / 2
   gameOverScene.addChild(message)
   gameOverScene.visible = false
-
-  // Set the game's current state to 'play'
-  state = play
 
   // Start the game loop
   gameLoop()
@@ -203,6 +208,9 @@ function play() {
   }
 }
 
+function stop() {
+  // gameScene.visible = true
+}
 
 function end() {
   // gameScene.visible = false
