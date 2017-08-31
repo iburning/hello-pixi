@@ -28,7 +28,7 @@ document.body.appendChild(renderer.view)
 
 // Scale the canvas to the maximum window
 let scale = scaleToWindow(renderer.view) || 1
-console.log('scale', scale)
+// console.log('scale', scale)
 
 // Create a new instance of Tink, the interactive module.
 const tink = new Tink(PIXI, renderer.view, scale)
@@ -72,14 +72,15 @@ function setup() {
   gameScene.addChild(scoreDisplay.view)
 
   ball.speed = 10
-  ball.vx = 5
-  ball.vy = ball.speed
+  ball.vx = randomInt(3, 5)
+  ball.vy = randomInt(5, 10)
   ball.maxSpeed = 18
-  ball.acceleration =  2
+  ball.acceleration = 2
   gameScene.addChild(ball)
 
-  bat.x = (renderer.view.width - bat.width) / 2
+  bat.x = bat.lastX = (renderer.view.width - bat.width) / 2
   bat.y = renderer.view.height - UNIT * 30
+  bat.vx = bat.x - bat.lastX
   // bindKeyBorad(bat)
   gameScene.addChild(bat)
   // tink.makeDraggable(bat)
@@ -93,7 +94,7 @@ function setup() {
   // Make the pointer
   const pointer = tink.makePointer()
   pointer.press = () => {
-    console.log('press', pointer.x, pointer.y)
+    // console.log('press', pointer.x, pointer.y)
     // Set the game's current state to 'play'
     if (state != end) {
       state = play
@@ -101,7 +102,7 @@ function setup() {
   }
 
   pointer.release = () => {
-    console.log('release', pointer.x, pointer.y)
+    // console.log('release', pointer.x, pointer.y)
     // Set the game's current state to 'play'
     if (state != end) {
       state = stop
@@ -150,6 +151,10 @@ function play() {
   // bat.x += bat.vx
   // bat.y += bat.vy
   bat.x = batTinker.x
+  bat.vx = bat.x - bat.lastX
+  bat.lastX = bat.x
+  console.log(bat.vx)
+  // console.log('bat.vx', bat.vx)
   // bat.y = batTinker.y - UNIT * 5
 
   bump.contain(bat, {
@@ -167,7 +172,7 @@ function play() {
   })
 
   if (collision) {
-    console.log("collision", collision, score, miss, ball.vx, ball.vy)
+    // console.log("collision", collision, score, miss, ball.vx, ball.vy)
     // Reverse the sprite's 'vx' value if it hits the left or right
     if (collision.has("left") || collision.has("right")) {
       ball.vx = -ball.vx
@@ -192,7 +197,7 @@ function play() {
 
   let hitTest = bump.rectangleCollision(ball, bat)
   if (hitTest) {
-    console.log('hitTest', hitTest)
+    // console.log('hitTest', hitTest)
     if (hitTest == "bottom") {
       score++
       scoreDisplay.setScore(score)
@@ -200,7 +205,7 @@ function play() {
 
     if (hitTest == "top" || hitTest == "bottom") {
       if (Math.abs(ball.vx) < ball.maxSpeed) {
-        ball.vx += ball.acceleration
+        ball.vx = ball.acceleration + bat.vx
       }
 
       if (Math.abs(ball.vy) < ball.maxSpeed) {
@@ -208,6 +213,7 @@ function play() {
       }
 
       ball.vy = -ball.vy
+      console.log('hit', ball.vx)
     }
   }
 }
@@ -219,23 +225,6 @@ function stop() {
 function end() {
   // gameScene.visible = false
   gameOverScene.visible = true
-}
-
-
-function linkFont(source) {
-  // console.log("linkFont", source)
-  // Use the font's filename as the 'fontFamily' name.
-  // This code captures the font file's name without the extension or file path
-  let fontFamily = source.split("/").pop().split(".")[0]
-
-  // Append an '@font-face' style rule to the head of the HTML document
-  let newStyle = document.createElement("style")
-  let fontFace = `@font-face {
-    font-family: "${fontFamily}";
-    src: url("${source}");
-  }`
-  newStyle.appendChild(document.createTextNode(fontFace))
-  document.head.appendChild(newStyle)
 }
 
 
@@ -298,4 +287,26 @@ function bindKeyBorad(object) {
       object.vy = 0
     }
   }
+}
+
+
+function linkFont(source) {
+  // console.log("linkFont", source)
+  // Use the font's filename as the 'fontFamily' name.
+  // This code captures the font file's name without the extension or file path
+  let fontFamily = source.split("/").pop().split(".")[0]
+
+  // Append an '@font-face' style rule to the head of the HTML document
+  let newStyle = document.createElement("style")
+  let fontFace = `@font-face {
+    font-family: "${fontFamily}";
+    src: url("${source}");
+  }`
+  newStyle.appendChild(document.createTextNode(fontFace))
+  document.head.appendChild(newStyle)
+}
+
+
+function randomInt(min, max) {
+  return Math.floor(Math.random() * (max - min + 1)) + min
 }
